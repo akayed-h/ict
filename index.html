@@ -20,12 +20,10 @@
 
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
-          fontFamily: {
-            bengali: ['"Hind Siliguri"', 'sans-serif'],
-            mono: ['"JetBrains Mono"', 'monospace'],
-          },
+// ... existing code ... -->
           colors: {
             bdayPink: '#FCE4EC',
             bdayPinkDark: '#EC407A',
@@ -45,16 +43,64 @@
     };
   </script>
 
+  <!-- Prevent Flash of Wrong Theme on Load -->
+  <script>
+    (function () {
+      const savedTheme = localStorage.getItem('hsc-ict-bday-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+
   <style>
+    :root {
+      --bg-page: #FFF8FB;
+      --text-primary: #1E293B;
+      --text-secondary: #475569;
+      --card-surface: rgba(255, 255, 255, 0.94);
+      --card-border-default: #FBCFE8;
+      --drawer-bg: linear-gradient(135deg, #E8F5E9 0%, rgba(236, 253, 245, 0.85) 55%, rgba(224, 242, 254, 0.75) 100%);
+      --drawer-border: #A7F3D0;
+      --step-box-bg: rgba(255, 255, 255, 0.92);
+      --scrollbar-track: #FCE4EC;
+      --scrollbar-thumb: #F06292;
+    }
+
+    html.dark {
+      --bg-page: #120F1D;
+      --text-primary: #F5F2FF;
+      --text-secondary: #C7BFE6;
+      --card-surface: rgba(31, 25, 51, 0.92);
+      --card-border-default: #362C54;
+      --drawer-bg: linear-gradient(135deg, rgba(24, 34, 52, 0.96) 0%, rgba(28, 22, 48, 0.96) 60%, rgba(20, 42, 46, 0.92) 100%);
+      --drawer-border: #2E5A54;
+      --step-box-bg: rgba(20, 16, 36, 0.88);
+      --scrollbar-track: #181326;
+      --scrollbar-thumb: #FF6B9D;
+    }
+
     body {
       font-family: 'Hind Siliguri', sans-serif;
-      background-color: #FFF8FB;
+      background-color: var(--bg-page);
+      color: var(--text-primary);
       background-image:
         radial-gradient(circle at 12% 15%, rgba(255, 213, 79, 0.25) 0%, transparent 28%),
         radial-gradient(circle at 88% 20%, rgba(79, 195, 247, 0.22) 0%, transparent 30%),
         radial-gradient(circle at 18% 80%, rgba(186, 104, 200, 0.18) 0%, transparent 32%),
         radial-gradient(circle at 85% 85%, rgba(129, 199, 132, 0.22) 0%, transparent 30%);
       overflow-x: hidden;
+      transition: background-color 0.35s ease, color 0.35s ease;
+    }
+
+    html.dark body {
+      background-color: #120F1D;
+      background-image:
+        radial-gradient(circle at 12% 14%, rgba(255, 107, 157, 0.16) 0%, transparent 32%),
+        radial-gradient(circle at 88% 18%, rgba(92, 225, 230, 0.14) 0%, transparent 34%),
+        radial-gradient(circle at 20% 82%, rgba(192, 132, 252, 0.15) 0%, transparent 36%),
+        radial-gradient(circle at 84% 86%, rgba(255, 209, 102, 0.12) 0%, transparent 34%);
     }
 
     /* Festive Birthday Bunting Flags */
@@ -86,6 +132,12 @@
       z-index: 0;
       opacity: 0.55;
       animation: floatConfetti 9s ease-in-out infinite;
+      transition: box-shadow 0.35s ease, opacity 0.35s ease;
+    }
+
+    html.dark .confetti-piece {
+      opacity: 0.72;
+      box-shadow: 0 0 10px currentColor, 0 0 18px currentColor;
     }
 
     @keyframes floatConfetti {
@@ -99,7 +151,18 @@
 
     /* Smooth Reveal Animation */
     .answer-drawer {
+      background: var(--drawer-bg);
+      border-color: var(--drawer-border);
       animation: popReveal 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .step-box {
+      background-color: var(--step-box-bg);
+    }
+
+    html.dark .step-box {
+      border-color: #362C54 !important;
+      color: #F5F2FF;
     }
 
     @keyframes popReveal {
@@ -119,10 +182,10 @@
       height: 8px;
     }
     ::-webkit-scrollbar-track {
-      background: #FCE4EC;
+      background: var(--scrollbar-track);
     }
     ::-webkit-scrollbar-thumb {
-      background: #F06292;
+      background: var(--scrollbar-thumb);
       border-radius: 9999px;
     }
     ::-webkit-scrollbar-thumb:hover {
@@ -133,9 +196,12 @@
     .katex {
       font-size: 1.03em;
     }
+    html.dark .katex {
+      color: #F5F2FF;
+    }
   </style>
 </head>
-<body class="text-slate-800 antialiased selection:bg-pink-200 selection:text-pink-900">
+<body class="text-slate-800 dark:text-[#F5F2FF] antialiased selection:bg-pink-200 selection:text-pink-900 dark:selection:bg-pink-500/40 dark:selection:text-pink-100">
 
   <!-- Decorative Floating Confetti Layer -->
   <div id="confetti-container" aria-hidden="true"></div>
@@ -145,32 +211,44 @@
 
   <!-- Festive Header -->
   <header class="relative z-10 max-w-5xl mx-auto px-4 pt-6 pb-4">
-    <div class="bg-white/90 backdrop-blur-md rounded-3xl border-2 border-pink-200 shadow-lg shadow-pink-100/70 p-6 sm:p-8 text-center relative overflow-hidden">
+    <div class="bg-white/90 dark:bg-[#1F1933]/95 backdrop-blur-md rounded-3xl border-2 border-pink-200 dark:border-[#362C54] shadow-lg shadow-pink-100/70 dark:shadow-[0_12px_40px_rgba(0,0,0,0.55)] p-6 sm:p-8 text-center relative overflow-hidden transition-colors duration-300">
       <!-- Corner Balloon & Party Badges -->
       <span class="hidden sm:inline-block absolute top-4 left-5 text-3xl animate-bounce" style="animation-duration: 3s;">🎈</span>
       <span class="hidden sm:inline-block absolute top-4 right-5 text-3xl animate-bounce" style="animation-duration: 3.4s;">🎂</span>
       <span class="hidden md:inline-block absolute bottom-4 left-8 text-2xl">🎊</span>
       <span class="hidden md:inline-block absolute bottom-4 right-8 text-2xl">🎁</span>
 
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-pink-100 via-yellow-100 to-sky-100 border border-pink-200 text-pink-700 font-semibold text-sm mb-3 shadow-xs">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-pink-100 via-yellow-100 to-sky-100 dark:from-pink-500/20 dark:via-amber-400/20 dark:to-cyan-400/20 border border-pink-200 dark:border-pink-400/30 text-pink-700 dark:text-[#FFD166] font-semibold text-sm mb-3 shadow-xs">
         <span>✨ উৎসবমুখর লার্নিং স্পেশাল</span>
         <span>•</span>
         <span>অধ্যায় ৩.১ (সংখ্যা পদ্ধতি)</span>
       </div>
 
-      <h1 class="text-2xl sm:text-4xl font-bold text-slate-900 tracking-tight leading-snug">
-        🎉 এইচএসসি আইসিটি — <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-sky-500">সংখ্যা পদ্ধতি</span> সৃজনশীল প্রশ্নব্যাংক
+      <h1 class="text-2xl sm:text-4xl font-bold text-slate-900 dark:text-[#F5F2FF] tracking-tight leading-snug">
+        🎉 এইচএসসি আইসিটি — <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-sky-500 dark:from-[#FF6B9D] dark:via-[#C084FC] dark:to-[#5CE1E6]">সংখ্যা পদ্ধতি</span> সৃজনশীল প্রশ্নব্যাংক
       </h1>
-      <p class="mt-2 text-slate-600 text-base sm:text-lg max-w-2xl mx-auto">
+      <p class="mt-2 text-slate-600 dark:text-[#C7BFE6] text-base sm:text-lg max-w-2xl mx-auto">
         একাদশ-দ্বাদশ শ্রেণি • বাংলাদেশের বোর্ড স্ট্যান্ডার্ড ১০টি সৃজনশীল প্রশ্ন এবং হ্যান্ডনোটের নিয়ম (Rule 1–4 ও ২-এর পরিপূরক) অনুযায়ী ধাপে ধাপে সমাধান।
       </p>
 
       <!-- Global Controls & Progress Bar -->
       <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <!-- Dark Mode Toggle Button -->
+        <button
+          id="theme-toggle-btn"
+          type="button"
+          onclick="toggleTheme()"
+          aria-label="ডার্ক বা লাইট মোড পরিবর্তন করুন"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 dark:from-amber-300 dark:via-yellow-300 dark:to-pink-300 text-amber-200 dark:text-slate-950 font-bold text-sm border border-purple-500/50 dark:border-amber-200 shadow-md shadow-purple-200/60 dark:shadow-[0_0_20px_rgba(255,209,102,0.35)] transition-all hover:scale-[1.03] active:scale-95 cursor-pointer"
+        >
+          <span id="theme-icon" class="text-base transition-transform duration-300">🌙</span>
+          <span id="theme-label">ডার্ক মোড</span>
+        </button>
+
         <button
           id="reveal-all-btn"
           onclick="toggleAllAnswers(true)"
-          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold text-sm shadow-md shadow-pink-200 transition-all active:scale-95 cursor-pointer"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 dark:from-[#FF6B9D] dark:to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold text-sm shadow-md shadow-pink-200 dark:shadow-pink-950/60 transition-all active:scale-95 cursor-pointer"
         >
           <span>🎁</span> সব উত্তর দেখুন (Reveal All)
         </button>
@@ -178,20 +256,20 @@
         <button
           id="hide-all-btn"
           onclick="toggleAllAnswers(false)"
-          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-sky-400 to-indigo-400 hover:from-sky-500 hover:to-indigo-500 text-white font-semibold text-sm shadow-md shadow-sky-200 transition-all active:scale-95 cursor-pointer"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-sky-400 to-indigo-400 dark:from-cyan-500 dark:to-indigo-500 hover:from-sky-500 hover:to-indigo-500 text-white font-semibold text-sm shadow-md shadow-sky-200 dark:shadow-indigo-950/60 transition-all active:scale-95 cursor-pointer"
         >
           <span>🙈</span> সব লুকান (Hide All)
         </button>
 
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-100 border border-yellow-300 text-yellow-900 font-semibold text-sm">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-100 dark:bg-[#2A2142] border border-yellow-300 dark:border-amber-400/40 text-yellow-900 dark:text-[#FFD166] font-semibold text-sm">
           <span>🎈 উন্মোচিত উত্তর:</span>
-          <span id="revealed-counter" class="font-mono font-bold text-pink-600">0 / 40</span>
+          <span id="revealed-counter" class="font-mono font-bold text-pink-600 dark:text-[#FF6B9D]">0 / 40</span>
         </div>
       </div>
 
       <!-- Quick Jump Pills for Questions 1 to 10 -->
-      <nav aria-label="প্রশ্ন নেভিগেশন" class="mt-5 pt-4 border-t border-pink-100">
-        <p class="text-xs font-semibold text-slate-500 mb-2.5">দ্রুত প্রশ্নে যান (Quick Jump):</p>
+      <nav aria-label="প্রশ্ন নেভিগেশন" class="mt-5 pt-4 border-t border-pink-100 dark:border-[#362C54]">
+        <p class="text-xs font-semibold text-slate-500 dark:text-[#C7BFE6] mb-2.5">দ্রুত প্রশ্নে যান (Quick Jump):</p>
         <div id="jump-nav" class="flex flex-wrap items-center justify-center gap-2"></div>
       </nav>
     </div>
@@ -202,8 +280,8 @@
 
   <!-- Festive Footer -->
   <footer class="relative z-10 max-w-5xl mx-auto px-4 pb-10 text-center">
-    <div class="bg-white/80 backdrop-blur-sm rounded-2xl border border-purple-200 p-4 text-sm text-slate-600 shadow-sm">
-      🎂 <span class="font-semibold text-pink-600">শুভ পড়াশোনা!</span> প্রতিটি প্রশ্নের <span class="font-semibold text-slate-800">ক, খ, গ, ঘ</span> অংশের নিচে থাকা ছোট বাটনে ক্লিক করে নিজের প্রস্তুতি যাচাই করো।
+    <div class="bg-white/80 dark:bg-[#1F1933]/90 backdrop-blur-sm rounded-2xl border border-purple-200 dark:border-[#362C54] p-4 text-sm text-slate-600 dark:text-[#C7BFE6] shadow-sm transition-colors">
+      🎂 <span class="font-semibold text-pink-600 dark:text-[#FF6B9D]">শুভ পড়াশোনা!</span> প্রতিটি প্রশ্নের <span class="font-semibold text-slate-800 dark:text-[#F5F2FF]">ক, খ, গ, ঘ</span> অংশের নিচে থাকা ছোট বাটনে ক্লিক করে নিজের প্রস্তুতি যাচাই করো।
     </div>
   </footer>
 
@@ -215,17 +293,17 @@
         id: 1,
         badge: "প্রশ্ন ০১ • পরীক্ষার ফলাফল ও নম্বর তুলনা",
         theme: {
-          cardBorder: "border-pink-300",
-          headerBg: "from-pink-100 via-rose-50 to-yellow-50",
-          badgeBg: "bg-pink-500 text-white",
-          stemBg: "bg-pink-50/70 border-pink-200",
+          cardBorder: "border-pink-300 dark:border-pink-500/40",
+          headerBg: "from-pink-100 via-rose-50 to-yellow-50 dark:from-pink-950/60 dark:via-[#261D3D] dark:to-amber-950/30",
+          badgeBg: "bg-pink-500 dark:bg-[#FF6B9D] text-white dark:text-slate-950",
+          stemBg: "bg-pink-50/70 dark:bg-[#261E3D]/90 border-pink-200 dark:border-pink-500/30",
         },
         stem: `
           <p class="leading-relaxed">
             একাদশ শ্রেণির অর্ধবার্ষিক পরীক্ষায় রাফি বাংলা, ইংরেজি ও আইসিটি বিষয়ে যথাক্রমে 
-            <span class="font-semibold text-pink-700">$(4F)_{16}$</span>, 
-            <span class="font-semibold text-purple-700">$(115)_8$</span> এবং 
-            <span class="font-semibold text-sky-700">$(1010101)_2$</span> নম্বর পেয়েছে। 
+            <span class="font-semibold text-pink-700 dark:text-[#FF6B9D]">$(4F)_{16}$</span>, 
+            <span class="font-semibold text-purple-700 dark:text-[#C084FC]">$(115)_8$</span> এবং 
+            <span class="font-semibold text-sky-700 dark:text-[#5CE1E6]">$(1010101)_2$</span> নম্বর পেয়েছে। 
             তার বন্ধু তানভীর দাবি করল যে, রাফির ইংরেজি ও আইসিটি বিষয়ের নম্বরের পার্থক্য যোগের মাধ্যমে নির্ণয় করা সম্ভব।
           </p>
         `,
@@ -252,20 +330,20 @@
             question: "উদ্দীপকে রাফির বাংলা ও ইংরেজি বিষয়ে প্রাপ্ত মোট নম্বর অক্টাল সংখ্যা পদ্ধতিতে নির্ণয় করো।",
             answer: `
               <p class="mb-2">উদ্দীপক অনুযায়ী, বাংলায় প্রাপ্ত নম্বর $= (4F)_{16}$ এবং ইংরেজিতে প্রাপ্ত নম্বর $= (115)_8$।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-pink-200 mb-2">
-                <p class="font-semibold text-pink-700">ধাপ ১ (Rule 3: Hexa-decimal &rarr; Binary, BCD 8421 ব্যবহার করে):</p>
+              <div class="step-box rounded-xl p-3 border border-pink-200 mb-2">
+                <p class="font-semibold text-pink-700 dark:text-[#FF6B9D]">ধাপ ১ (Rule 3: Hexa-decimal &rarr; Binary, BCD 8421 ব্যবহার করে):</p>
                 <p class="mt-1">$(4F)_{16} = 4 \\quad F = 0100\\ 1111 = (01001111)_2$</p>
               </div>
-              <div class="bg-white/90 rounded-xl p-3 border border-purple-200 mb-2">
-                <p class="font-semibold text-purple-700">ধাপ ২ (Rule 4.1: Binary &rarr; Octal, ডান থেকে বামে ৩ বিট করে):</p>
+              <div class="step-box rounded-xl p-3 border border-purple-200 mb-2">
+                <p class="font-semibold text-purple-700 dark:text-[#C084FC]">ধাপ ২ (Rule 4.1: Binary &rarr; Octal, ডান থেকে বামে ৩ বিট করে):</p>
                 <p class="mt-1">$(01001111)_2 = 001\\ 001\\ 111 = (117)_8$</p>
               </div>
               <p class="font-semibold mt-2">এখন, বাংলা ও ইংরেজির মোট নম্বর (অক্টালে):</p>
-              <pre class="font-mono text-sm bg-slate-900 text-emerald-300 rounded-xl p-3 mt-1 overflow-x-auto">  (117)₈
+              <pre class="font-mono text-sm bg-slate-900 dark:bg-[#0D0A17] text-emerald-300 border border-slate-700/60 rounded-xl p-3 mt-1 overflow-x-auto">  (117)₈
 + (115)₈
 ─────────
   (234)₈   [ব্যাখ্যা: 7+5 = 12₁₀ = 14₈, বসে 4 ও ক্যারি 1; 1+1+1=3; 1+1=2]</pre>
-              <p class="mt-2 font-bold text-emerald-700">উত্তর: বাংলা ও ইংরেজিতে প্রাপ্ত মোট নম্বর $(234)_8$।</p>
+              <p class="mt-2 font-bold text-emerald-700 dark:text-[#4ADE80]">উত্তর: বাংলা ও ইংরেজিতে প্রাপ্ত মোট নম্বর $(234)_8$।</p>
             `,
           },
           {
@@ -274,14 +352,14 @@
             question: "উদ্দীপকে তানভীরের দাবিটির যথার্থতা গাণিতিকভাবে বিশ্লেষণ করো।",
             answer: `
               <p class="mb-2">উদ্দীপক অনুযায়ী, ইংরেজিতে প্রাপ্ত নম্বর $= (115)_8$ এবং আইসিটিতে প্রাপ্ত নম্বর $= (1010101)_2$।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-sky-200 mb-2">
-                <p class="font-semibold text-sky-700">ধাপ ১ (Rule 2: সংখ্যা দুটিকে Decimal-এ রূপান্তর):</p>
+              <div class="step-box rounded-xl p-3 border border-sky-200 mb-2">
+                <p class="font-semibold text-sky-700 dark:text-[#5CE1E6]">ধাপ ১ (Rule 2: সংখ্যা দুটিকে Decimal-এ রূপান্তর):</p>
                 <p class="mt-1">$(115)_8 = 1 \\times 8^2 + 1 \\times 8^1 + 5 \\times 8^0 = 64 + 8 + 5 = (77)_{10}$</p>
                 <p class="mt-1">$(1010101)_2 = 1\\times 2^6 + 0\\times 2^5 + 1\\times 2^4 + 0\\times 2^3 + 1\\times 2^2 + 0\\times 2^1 + 1\\times 2^0 = 64 + 16 + 4 + 1 = (85)_{10}$</p>
               </div>
               <p class="mb-2">পার্থক্য নির্ণয়: $(85)_{10} - (77)_{10} = 85 + (-77)$</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-amber-200 mb-2">
-                <p class="font-semibold text-amber-800">ধাপ ২ (৮-বিট রেজিস্টারে ২-এর পরিপূরক গঠন):</p>
+              <div class="step-box rounded-xl p-3 border border-amber-200 mb-2">
+                <p class="font-semibold text-amber-800 dark:text-[#FFD166]">ধাপ ২ (৮-বিট রেজিস্টারে ২-এর পরিপূরক গঠন):</p>
                 <ul class="list-disc list-inside mt-1 space-y-1">
                   <li>$(+85)_{10} = (01010101)_2$</li>
                   <li>$(+77)_{10} = (01001101)_2$</li>
@@ -289,12 +367,12 @@
                   <li>$(-77)$-এর ২-এর পরিপূরক $= 10110010 + 1 = (10110011)_2$</li>
                 </ul>
               </div>
-              <pre class="font-mono text-sm bg-slate-900 text-amber-200 rounded-xl p-3 overflow-x-auto">   01010101   (+85)
+              <pre class="font-mono text-sm bg-slate-900 dark:bg-[#0D0A17] text-amber-200 border border-slate-700/60 rounded-xl p-3 overflow-x-auto">   01010101   (+85)
  + 10110011   (-77)
  ──────────
  [1]00001000  (+8)</pre>
               <p class="mt-2">বামদিকের নবম বিটটি (Overflow bit) বাদ দিলে ফলাফল $(00001000)_2 = (8)_{10}$। যেহেতু চিহ্ন বিট (Sign bit) ০, তাই ফলাফল ধনাত্মক $(+8)_{10}$।</p>
-              <p class="mt-2 font-bold text-emerald-700">সিদ্ধান্ত: ২-এর পরিপূরক পদ্ধতিতে যোগের মাধ্যমে পার্থক্য $(8)_{10}$ নির্ণয় করা সম্ভব হয়েছে। সুতরাং, তানভীরের দাবিটি যথার্থ।</p>
+              <p class="mt-2 font-bold text-emerald-700 dark:text-[#4ADE80]">সিদ্ধান্ত: ২-এর পরিপূরক পদ্ধতিতে যোগের মাধ্যমে পার্থক্য $(8)_{10}$ নির্ণয় করা সম্ভব হয়েছে। সুতরাং, তানভীরের দাবিটি যথার্থ।</p>
             `,
           },
         ],
@@ -303,16 +381,16 @@
         id: 2,
         badge: "প্রশ্ন ০২ • কেনাকাটা ও মূল্য পরিশোধ",
         theme: {
-          cardBorder: "border-sky-300",
-          headerBg: "from-sky-100 via-blue-50 to-mint-50",
-          badgeBg: "bg-sky-500 text-white",
-          stemBg: "bg-sky-50/70 border-sky-200",
+          cardBorder: "border-sky-300 dark:border-cyan-500/40",
+          headerBg: "from-sky-100 via-blue-50 to-mint-50 dark:from-cyan-950/60 dark:via-[#231C3A] dark:to-emerald-950/30",
+          badgeBg: "bg-sky-500 dark:bg-[#5CE1E6] text-white dark:text-slate-950",
+          stemBg: "bg-sky-50/70 dark:bg-[#231D3B]/90 border-sky-200 dark:border-cyan-500/30",
         },
         stem: `
           <p class="leading-relaxed">
-            নাবিলা বইমেলা থেকে <span class="font-semibold text-sky-700">$(2A)_{16}$</span> টাকা মূল্যের একটি গল্পের বই এবং 
-            <span class="font-semibold text-pink-700">$(65)_8$</span> টাকা মূল্যের একটি কবিতার বই ক্রয় করল। 
-            সে দোকানদারকে <span class="font-semibold text-purple-700">$(1100100)_2$</span> টাকার একটি নোট দিল।
+            নাবিলা বইমেলা থেকে <span class="font-semibold text-sky-700 dark:text-[#5CE1E6]">$(2A)_{16}$</span> টাকা মূল্যের একটি গল্পের বই এবং 
+            <span class="font-semibold text-pink-700 dark:text-[#FF6B9D]">$(65)_8$</span> টাকা মূল্যের একটি কবিতার বই ক্রয় করল। 
+            সে দোকানদারকে <span class="font-semibold text-purple-700 dark:text-[#C084FC]">$(1100100)_2$</span> টাকার একটি নোট দিল।
           </p>
         `,
         parts: [
@@ -338,12 +416,12 @@
             question: "উদ্দীপকের বই দুটির মোট মূল্য দশমিক সংখ্যা পদ্ধতিতে নির্ণয় করো।",
             answer: `
               <p class="mb-2">উদ্দীপক অনুযায়ী, গল্পের বইয়ের মূল্য $= (2A)_{16}$ টাকা এবং কবিতার বইয়ের মূল্য $= (65)_8$ টাকা।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-sky-200 mb-2">
-                <p class="font-semibold text-sky-700">Rule 2 অনুসারে উভয় মূল্যকে Decimal-এ রূপান্তর:</p>
+              <div class="step-box rounded-xl p-3 border border-sky-200 mb-2">
+                <p class="font-semibold text-sky-700 dark:text-[#5CE1E6]">Rule 2 অনুসারে উভয় মূল্যকে Decimal-এ রূপান্তর:</p>
                 <p class="mt-1">$(2A)_{16} = 2 \\times 16^1 + 10 \\times 16^0 = 32 + 10 = (42)_{10}$ টাকা</p>
                 <p class="mt-1">$(65)_8 = 6 \\times 8^1 + 5 \\times 8^0 = 48 + 5 = (53)_{10}$ টাকা</p>
               </div>
-              <p class="mt-2 font-bold text-emerald-700">উত্তর: বই দুটির মোট মূল্য $= (42 + 53)_{10} = (95)_{10}$ টাকা।</p>
+              <p class="mt-2 font-bold text-emerald-700 dark:text-[#4ADE80]">উত্তর: বই দুটির মোট মূল্য $= (42 + 53)_{10} = (95)_{10}$ টাকা।</p>
             `,
           },
           {
@@ -352,13 +430,13 @@
             question: "দোকানদার নাবিলাকে যে টাকা ফেরত দিবে তা ২-এর পরিপূরক পদ্ধতিতে নির্ণয় করা সম্ভব কি না — গাণিতিকভাবে বিশ্লেষণ করো।",
             answer: `
               <p class="mb-2">দোকানদারকে দেওয়া নোটের মূল্য $= (1100100)_2$ টাকা।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-purple-200 mb-2">
-                <p class="font-semibold text-purple-700">Rule 2 অনুসারে প্রদত্ত টাকার Decimal মান:</p>
+              <div class="step-box rounded-xl p-3 border border-purple-200 mb-2">
+                <p class="font-semibold text-purple-700 dark:text-[#C084FC]">Rule 2 অনুসারে প্রদত্ত টাকার Decimal মান:</p>
                 <p class="mt-1">$(1100100)_2 = 1\\times 2^6 + 1\\times 2^5 + 0\\times 2^4 + 0\\times 2^3 + 1\\times 2^2 + 0\\times 2^1 + 0\\times 2^0 = 64 + 32 + 4 = (100)_{10}$ টাকা</p>
               </div>
               <p class="mb-2">ফেরত প্রাপ্য টাকা $= (100)_{10} - (95)_{10} = 100 + (-95)$।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-amber-200 mb-2">
-                <p class="font-semibold text-amber-800">৮-বিট রেজিস্টারে ২-এর পরিপূরক গঠন:</p>
+              <div class="step-box rounded-xl p-3 border border-amber-200 mb-2">
+                <p class="font-semibold text-amber-800 dark:text-[#FFD166]">৮-বিট রেজিস্টারে ২-এর পরিপূরক গঠন:</p>
                 <ul class="list-disc list-inside mt-1 space-y-1">
                   <li>$(+100)_{10} = (01100100)_2$</li>
                   <li>$(+95)_{10} = (01011111)_2$</li>
@@ -366,12 +444,12 @@
                   <li>$(-95)$-এর ২-এর পরিপূরক $= 10100000 + 1 = (10100001)_2$</li>
                 </ul>
               </div>
-              <pre class="font-mono text-sm bg-slate-900 text-sky-200 rounded-xl p-3 overflow-x-auto">   01100100   (+100)
+              <pre class="font-mono text-sm bg-slate-900 dark:bg-[#0D0A17] text-sky-200 border border-slate-700/60 rounded-xl p-3 overflow-x-auto">   01100100   (+100)
  + 10100001   (-95)
  ──────────
  [1]00000101  (+5)</pre>
               <p class="mt-2">Overflow bit ($1$) বাদ দিলে ফলাফল $(00000101)_2 = (5)_{10}$ টাকা।</p>
-              <p class="mt-2 font-bold text-emerald-700">সিদ্ধান্ত: হ্যাঁ, ২-এর পরিপূরক পদ্ধতিতে যোগের মাধ্যমে দোকানদার নাবিলাকে $(5)_{10}$ টাকা ফেরত দিবে তা গাণিতিকভাবে নির্ণয় করা সম্ভব।</p>
+              <p class="mt-2 font-bold text-emerald-700 dark:text-[#4ADE80]">সিদ্ধান্ত: হ্যাঁ, ২-এর পরিপূরক পদ্ধতিতে যোগের মাধ্যমে দোকানদার নাবিলাকে $(5)_{10}$ টাকা ফেরত দিবে তা গাণিতিকভাবে নির্ণয় করা সম্ভব।</p>
             `,
           },
         ],
@@ -380,16 +458,16 @@
         id: 3,
         badge: "প্রশ্ন ০৩ • সংখ্যা পদ্ধতির ধারা ও বেজ রূপান্তর",
         theme: {
-          cardBorder: "border-purple-300",
-          headerBg: "from-purple-100 via-fuchsia-50 to-pink-50",
-          badgeBg: "bg-purple-500 text-white",
-          stemBg: "bg-purple-50/70 border-purple-200",
+          cardBorder: "border-purple-300 dark:border-purple-500/40",
+          headerBg: "from-purple-100 via-fuchsia-50 to-pink-50 dark:from-purple-950/60 dark:via-[#261D3D] dark:to-pink-950/30",
+          badgeBg: "bg-purple-500 dark:bg-[#C084FC] text-white dark:text-slate-950",
+          stemBg: "bg-purple-50/70 dark:bg-[#261E3D]/90 border-purple-200 dark:border-purple-500/30",
         },
         stem: `
           <p class="leading-relaxed">
             আইসিটি শিক্ষক ক্লাসে বোর্ডে একটি অক্টাল সংখ্যা পদ্ধতির ধারা লিখলেন:
           </p>
-          <div class="my-2 px-4 py-2 bg-white rounded-xl border border-purple-200 text-center font-semibold text-purple-800">
+          <div class="my-2 px-4 py-2 bg-white dark:bg-[#141024] rounded-xl border border-purple-200 dark:border-purple-500/40 text-center font-semibold text-purple-800 dark:text-[#C084FC]">
             $(64)_8, \\quad (70)_8, \\quad (74)_8, \\quad (?)_8, \\quad (104)_8$
           </div>
           <p class="leading-relaxed">
@@ -422,12 +500,12 @@
               <p>এখানে, ২য় পদ $-$ ১ম পদ $= (70)_8 - (64)_8 = (4)_8$ এবং ৩য় পদ $-$ ২য় পদ $= (74)_8 - (70)_8 = (4)_8$।</p>
               <p class="mt-1">সুতরাং, ধারাটির সাধারণ অন্তর $(4)_8$।</p>
               <p class="mt-1 font-semibold">$\therefore$ ৪র্থ পদ (?) $= (74)_8 + (4)_8 = (100)_8$ <em>(যেহেতু অক্টালে $4+4=8_{10}=10_8$)</em>।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-purple-200 mt-2">
-                <p class="font-semibold text-purple-700">Rule 3 ও Rule 4 অনুসারে $(100)_8$-কে Hexa-decimal-এ রূপান্তর:</p>
+              <div class="step-box rounded-xl p-3 border border-purple-200 mt-2">
+                <p class="font-semibold text-purple-700 dark:text-[#C084FC]">Rule 3 ও Rule 4 অনুসারে $(100)_8$-কে Hexa-decimal-এ রূপান্তর:</p>
                 <p class="mt-1"><strong>Octal &rarr; Binary (BCD 421):</strong> $(100)_8 = 001\\ 000\\ 000 = (001000000)_2$</p>
                 <p class="mt-1"><strong>Binary &rarr; Hexa-decimal (৪ বিট গ্রুপিং):</strong> $0000\\ 0100\\ 0000 = (40)_{16}$</p>
               </div>
-              <p class="mt-2 font-bold text-emerald-700">উত্তর: প্রশ্নবোধক স্থানের সংখ্যাটি $(100)_8$ এবং এর হেক্সাডেসিমাল মান $(40)_{16}$।</p>
+              <p class="mt-2 font-bold text-emerald-700 dark:text-[#4ADE80]">উত্তর: প্রশ্নবোধক স্থানের সংখ্যাটি $(100)_8$ এবং এর হেক্সাডেসিমাল মান $(40)_{16}$।</p>
             `,
           },
           {
@@ -436,14 +514,14 @@
             question: "২-এর পরিপূরক পদ্ধতি ব্যবহার করে ধারাটির ৫ম পদ থেকে ২য় পদের পার্থক্য নির্ণয় করো (৮-বিট রেজিস্টার বিবেচনায়)।",
             answer: `
               <p class="mb-2">ধারাটির ৫ম পদ $= (104)_8$ এবং ২য় পদ $= (70)_8$।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-purple-200 mb-2">
-                <p class="font-semibold text-purple-700">Rule 2 অনুসারে Decimal-এ রূপান্তর:</p>
+              <div class="step-box rounded-xl p-3 border border-purple-200 mb-2">
+                <p class="font-semibold text-purple-700 dark:text-[#C084FC]">Rule 2 অনুসারে Decimal-এ রূপান্তর:</p>
                 <p class="mt-1">৫ম পদ $(104)_8 = 1\\times 8^2 + 0\\times 8^1 + 4\\times 8^0 = 64 + 0 + 4 = (68)_{10}$</p>
                 <p class="mt-1">২য় পদ $(70)_8 = 7\\times 8^1 + 0\\times 8^0 = 56 + 0 = (56)_{10}$</p>
               </div>
               <p class="mb-2">পার্থক্য $= 68 - 56 = 68 + (-56)$।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-amber-200 mb-2">
-                <p class="font-semibold text-amber-800">৮-বিট রেজিস্টারে ২-এর পরিপূরক গঠন:</p>
+              <div class="step-box rounded-xl p-3 border border-amber-200 mb-2">
+                <p class="font-semibold text-amber-800 dark:text-[#FFD166]">৮-বিট রেজিস্টারে ২-এর পরিপূরক গঠন:</p>
                 <ul class="list-disc list-inside mt-1 space-y-1">
                   <li>$(+68)_{10} = (01000100)_2$</li>
                   <li>$(+56)_{10} = (00111000)_2$</li>
@@ -451,11 +529,11 @@
                   <li>$(-56)$-এর ২-এর পরিপূরক $= 11000111 + 1 = (11001000)_2$</li>
                 </ul>
               </div>
-              <pre class="font-mono text-sm bg-slate-900 text-purple-200 rounded-xl p-3 overflow-x-auto">   01000100   (+68)
+              <pre class="font-mono text-sm bg-slate-900 dark:bg-[#0D0A17] text-purple-200 border border-slate-700/60 rounded-xl p-3 overflow-x-auto">   01000100   (+68)
  + 11001000   (-56)
  ──────────
  [1]00001100  (+12)</pre>
-              <p class="mt-2 font-bold text-emerald-700">উত্তর: Overflow bit ($1$) বাদ দিলে ফলাফল $(00001100)_2 = (12)_{10} = (14)_8$।</p>
+              <p class="mt-2 font-bold text-emerald-700 dark:text-[#4ADE80]">উত্তর: Overflow bit ($1$) বাদ দিলে ফলাফল $(00001100)_2 = (12)_{10} = (14)_8$।</p>
             `,
           },
         ],
@@ -464,16 +542,16 @@
         id: 4,
         badge: "প্রশ্ন ০৪ • খেলাধুলার রান ও পরিসংখ্যান",
         theme: {
-          cardBorder: "border-emerald-300",
-          headerBg: "from-emerald-100 via-teal-50 to-yellow-50",
-          badgeBg: "bg-emerald-600 text-white",
-          stemBg: "bg-emerald-50/70 border-emerald-200",
+          cardBorder: "border-emerald-300 dark:border-emerald-500/40",
+          headerBg: "from-emerald-100 via-teal-50 to-yellow-50 dark:from-emerald-950/60 dark:via-[#221C38] dark:to-teal-950/30",
+          badgeBg: "bg-emerald-600 dark:bg-[#4ADE80] text-white dark:text-slate-950",
+          stemBg: "bg-emerald-50/70 dark:bg-[#221D38]/90 border-emerald-200 dark:border-emerald-500/30",
         },
         stem: `
           <p class="leading-relaxed">
-            আন্তঃকলেজ ক্রিকেট টুর্নামেন্টে 'পদ্মা' দল প্রথম ইনিংসে <span class="font-semibold text-emerald-700">$(1101110)_2$</span> রান এবং 
-            দ্বিতীয় ইনিংসে <span class="font-semibold text-pink-700">$(C5)_{16}$</span> রান সংগ্রহ করে। 
-            অপরদিকে 'মেঘনা' দল প্রথম ইনিংসে <span class="font-semibold text-sky-700">$(310)_{10}$</span> রান সংগ্রহ করে।
+            আন্তঃকলেজ ক্রিকেট টুর্নামেন্টে 'পদ্মা' দল প্রথম ইনিংসে <span class="font-semibold text-emerald-700 dark:text-[#4ADE80]">$(1101110)_2$</span> রান এবং 
+            দ্বিতীয় ইনিংসে <span class="font-semibold text-pink-700 dark:text-[#FF6B9D]">$(C5)_{16}$</span> রান সংগ্রহ করে। 
+            অপরদিকে 'মেঘনা' দল প্রথম ইনিংসে <span class="font-semibold text-sky-700 dark:text-[#5CE1E6]">$(310)_{10}$</span> রান সংগ্রহ করে।
           </p>
         `,
         parts: [
@@ -499,16 +577,16 @@
             question: "'পদ্মা' দলের প্রথম ও দ্বিতীয় ইনিংসের মোট রান হেক্সাডেসিমাল সংখ্যা পদ্ধতিতে প্রকাশ করো।",
             answer: `
               <p class="mb-2">উদ্দীপক অনুযায়ী, 'পদ্মা' দলের ১ম ইনিংসের রান $= (1101110)_2$ এবং ২য় ইনিংসের রান $= (C5)_{16}$।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-emerald-200 mb-2">
-                <p class="font-semibold text-emerald-700">Rule 4.1 অনুসারে $(1101110)_2$-কে Hexa-decimal-এ রূপান্তর (৪ বিট গ্রুপিং):</p>
+              <div class="step-box rounded-xl p-3 border border-emerald-200 mb-2">
+                <p class="font-semibold text-emerald-700 dark:text-[#4ADE80]">Rule 4.1 অনুসারে $(1101110)_2$-কে Hexa-decimal-এ রূপান্তর (৪ বিট গ্রুপিং):</p>
                 <p class="mt-1">$(1101110)_2 = 0110\\ 1110 = (6E)_{16}$</p>
               </div>
               <p class="font-semibold">হেক্সাডেসিমেলে মোট রান নির্ণয়:</p>
-              <pre class="font-mono text-sm bg-slate-900 text-emerald-300 rounded-xl p-3 mt-1 overflow-x-auto">   (6E)₁₆
+              <pre class="font-mono text-sm bg-slate-900 dark:bg-[#0D0A17] text-emerald-300 border border-slate-700/60 rounded-xl p-3 mt-1 overflow-x-auto">   (6E)₁₆
  + (C5)₁₆
  ─────────
   (133)₁₆   [ব্যাখ্যা: E(14)+5 = 19₁₀ = 16+3 &rarr; বসে 3, ক্যারি 1; 6+C(12)+1 = 19₁₀ &rarr; 13₁₆]</pre>
-              <p class="mt-2 font-bold text-emerald-700">উত্তর: 'পদ্মা' দলের মোট রান $(133)_{16}$।</p>
+              <p class="mt-2 font-bold text-emerald-700 dark:text-[#4ADE80]">উত্তর: 'পদ্মা' দলের মোট রান $(133)_{16}$।</p>
             `,
           },
           {
@@ -517,13 +595,13 @@
             question: "২-এর পরিপূরক পদ্ধতি ব্যবহার করে 'পদ্মা' দলের দ্বিতীয় ইনিংসের রান ও 'মেঘনা' দলের রানের পার্থক্য নির্ণয় করো।",
             answer: `
               <p class="mb-2">'পদ্মা' দলের ২য় ইনিংসের রান $= (C5)_{16}$ এবং 'মেঘনা' দলের রান $= (310)_{10}$।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-emerald-200 mb-2">
-                <p class="font-semibold text-emerald-700">Rule 2 অনুসারে $(C5)_{16}$-এর Decimal মান:</p>
+              <div class="step-box rounded-xl p-3 border border-emerald-200 mb-2">
+                <p class="font-semibold text-emerald-700 dark:text-[#4ADE80]">Rule 2 অনুসারে $(C5)_{16}$-এর Decimal মান:</p>
                 <p class="mt-1">$(C5)_{16} = 12 \\times 16^1 + 5 \\times 16^0 = 192 + 5 = (197)_{10}$</p>
               </div>
               <p class="mb-2">পার্থক্য $= 310 - 197 = 310 + (-197)$। <em>(যেহেতু মান ২৫৫-এর বেশি, তাই ১৬-বিট রেজিস্টার ব্যবহার করা হলো)</em></p>
-              <div class="bg-white/90 rounded-xl p-3 border border-amber-200 mb-2">
-                <p class="font-semibold text-amber-800">১৬-বিট রেজিস্টারে ২-এর পরিপূরক গঠন:</p>
+              <div class="step-box rounded-xl p-3 border border-amber-200 mb-2">
+                <p class="font-semibold text-amber-800 dark:text-[#FFD166]">১৬-বিট রেজিস্টারে ২-এর পরিপূরক গঠন:</p>
                 <ul class="list-disc list-inside mt-1 space-y-1">
                   <li>$(+310)_{10} = (00000001\\ 00110110)_2$</li>
                   <li>$(+197)_{10} = (00000000\\ 11000101)_2$</li>
@@ -531,11 +609,11 @@
                   <li>$(-197)$-এর ২-এর পরিপূরক $= 11111111\\ 00111010 + 1 = (11111111\\ 00111011)_2$</li>
                 </ul>
               </div>
-              <pre class="font-mono text-sm bg-slate-900 text-emerald-200 rounded-xl p-3 overflow-x-auto">    00000001 00110110   (+310)
+              <pre class="font-mono text-sm bg-slate-900 dark:bg-[#0D0A17] text-emerald-200 border border-slate-700/60 rounded-xl p-3 overflow-x-auto">    00000001 00110110   (+310)
   + 11111111 00111011   (-197)
   ───────────────────
  [1]00000000 01110001   (+113)</pre>
-              <p class="mt-2 font-bold text-emerald-700">উত্তর: Overflow bit ($1$) বাদ দিলে নির্ণেয় পার্থক্য $(00000000\\ 01110001)_2 = (113)_{10}$ রান।</p>
+              <p class="mt-2 font-bold text-emerald-700 dark:text-[#4ADE80]">উত্তর: Overflow bit ($1$) বাদ দিলে নির্ণেয় পার্থক্য $(00000000\\ 01110001)_2 = (113)_{10}$ রান।</p>
             `,
           },
         ],
@@ -544,15 +622,15 @@
         id: 5,
         badge: "প্রশ্ন ০৫ • দৃশ্যকল্পভিত্তিক (সমীকরণ ও পরিপূরক)",
         theme: {
-          cardBorder: "border-orange-300",
-          headerBg: "from-orange-100 via-amber-50 to-yellow-50",
-          badgeBg: "bg-orange-500 text-white",
-          stemBg: "bg-orange-50/70 border-orange-200",
+          cardBorder: "border-orange-300 dark:border-orange-500/40",
+          headerBg: "from-orange-100 via-amber-50 to-yellow-50 dark:from-orange-950/60 dark:via-[#261D3D] dark:to-amber-950/30",
+          badgeBg: "bg-orange-500 dark:bg-orange-400 text-white dark:text-slate-950",
+          stemBg: "bg-orange-50/70 dark:bg-[#261E3D]/90 border-orange-200 dark:border-orange-500/30",
         },
         stem: `
           <ul class="space-y-1.5 leading-relaxed">
-            <li><strong>দৃশ্যকল্প-১:</strong> শিক্ষক বোর্ডে লিখলেন: <span class="font-semibold text-orange-800">$(35)_8 + (2A)_{16} + (?)_2 = (90.75)_{10}$</span></li>
-            <li><strong>দৃশ্যকল্প-২:</strong> দুইটি সংখ্যা <span class="font-semibold text-purple-700">$P = (74)_{10}$</span> এবং <span class="font-semibold text-sky-700">$Q = (52)_{10}$</span>।</li>
+            <li><strong>দৃশ্যকল্প-১:</strong> শিক্ষক বোর্ডে লিখলেন: <span class="font-semibold text-orange-800 dark:text-[#FFD166]">$(35)_8 + (2A)_{16} + (?)_2 = (90.75)_{10}$</span></li>
+            <li><strong>দৃশ্যকল্প-২:</strong> দুইটি সংখ্যা <span class="font-semibold text-purple-700 dark:text-[#C084FC]">$P = (74)_{10}$</span> এবং <span class="font-semibold text-sky-700 dark:text-[#5CE1E6]">$Q = (52)_{10}$</span>।</li>
           </ul>
         `,
         parts: [
@@ -578,16 +656,16 @@
             question: "দৃশ্যকল্প-১ এ উল্লিখিত প্রশ্নবোধক $(?)_2$ অংশের মান নির্ণয় করো।",
             answer: `
               <p class="mb-2">দৃশ্যকল্প-১ অনুযায়ী: $(35)_8 + (2A)_{16} + (?)_2 = (90.75)_{10}$</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-orange-200 mb-2">
-                <p class="font-semibold text-orange-700">Rule 2 অনুসারে বামপক্ষের সংখ্যা দুটিকে Decimal-এ রূপান্তর:</p>
+              <div class="step-box rounded-xl p-3 border border-orange-200 mb-2">
+                <p class="font-semibold text-orange-700 dark:text-[#FFD166]">Rule 2 অনুসারে বামপক্ষের সংখ্যা দুটিকে Decimal-এ রূপান্তর:</p>
                 <p class="mt-1">$(35)_8 = 3 \\times 8^1 + 5 \\times 8^0 = 24 + 5 = (29)_{10}$</p>
                 <p class="mt-1">$(2A)_{16} = 2 \\times 16^1 + 10 \\times 16^0 = 32 + 10 = (42)_{10}$</p>
               </div>
               <p class="mb-2">সুতরাং, $(?)_2 = (90.75)_{10} - (29 + 42)_{10} = (90.75 - 71)_{10} = (19.75)_{10}$।</p>
               <div class="grid sm:grid-cols-2 gap-3">
-                <div class="bg-white/90 rounded-xl p-3 border border-sky-200">
-                  <p class="font-semibold text-sky-700">Rule 1.1: পূর্ণাংশ $(19)_{10}$ &rarr; Binary</p>
-                  <pre class="font-mono text-xs mt-1 text-slate-700">2 | 19
+                <div class="step-box rounded-xl p-3 border border-sky-200">
+                  <p class="font-semibold text-sky-700 dark:text-[#5CE1E6]">Rule 1.1: পূর্ণাংশ $(19)_{10}$ &rarr; Binary</p>
+                  <pre class="font-mono text-xs mt-1 text-slate-700 dark:text-slate-200">2 | 19
   └────
 2 |  9  ── 1 (LSB)
 2 |  4  ── 1
@@ -596,15 +674,15 @@
      0  ── 1 (MSB)
 &there4; (19)₁₀ = (10011)₂</pre>
                 </div>
-                <div class="bg-white/90 rounded-xl p-3 border border-pink-200">
-                  <p class="font-semibold text-pink-700">Rule 1.2: ভগ্নাংশ $(.75)_{10}$ &rarr; Binary</p>
-                  <pre class="font-mono text-xs mt-1 text-slate-700">  .75 &times; 2 = 1.50 &rarr; 1 (MSB)
+                <div class="step-box rounded-xl p-3 border border-pink-200">
+                  <p class="font-semibold text-pink-700 dark:text-[#FF6B9D]">Rule 1.2: ভগ্নাংশ $(.75)_{10}$ &rarr; Binary</p>
+                  <pre class="font-mono text-xs mt-1 text-slate-700 dark:text-slate-200">  .75 &times; 2 = 1.50 &rarr; 1 (MSB)
   .50 &times; 2 = 1.00 &rarr; 1 (LSB)
 
 &there4; (.75)₁₀ = (.11)₂</pre>
                 </div>
               </div>
-              <p class="mt-2 font-bold text-emerald-700">উত্তর: $(?)_2 = (10011.11)_2$।</p>
+              <p class="mt-2 font-bold text-emerald-700 dark:text-[#4ADE80]">উত্তর: $(?)_2 = (10011.11)_2$।</p>
             `,
           },
           {
@@ -613,8 +691,8 @@
             question: "দৃশ্যকল্প-২ অনুসারে ২-এর পরিপূরক পদ্ধতিতে $(Q - P)$ এর মান নির্ণয়পূর্বক ফলাফলের চিহ্ন বিট বিশ্লেষণ করো।",
             answer: `
               <p class="mb-2">দৃশ্যকল্প-২ অনুযায়ী, $P = (74)_{10}$ এবং $Q = (52)_{10}$। নির্ণেয় মান: $Q - P = 52 - 74 = 52 + (-74)$।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-amber-200 mb-2">
-                <p class="font-semibold text-amber-800">৮-বিট রেজিস্টারে ২-এর পরিপূরক গঠন:</p>
+              <div class="step-box rounded-xl p-3 border border-amber-200 mb-2">
+                <p class="font-semibold text-amber-800 dark:text-[#FFD166]">৮-বিট রেজিস্টারে ২-এর পরিপূরক গঠন:</p>
                 <ul class="list-disc list-inside mt-1 space-y-1">
                   <li>$(+52)_{10} = (00110100)_2$</li>
                   <li>$(+74)_{10} = (01001010)_2$</li>
@@ -622,12 +700,12 @@
                   <li>$(-74)$-এর ২-এর পরিপূরক $= 10110101 + 1 = (10110110)_2$</li>
                 </ul>
               </div>
-              <pre class="font-mono text-sm bg-slate-900 text-orange-200 rounded-xl p-3 overflow-x-auto">   00110100   (+52)
+              <pre class="font-mono text-sm bg-slate-900 dark:bg-[#0D0A17] text-orange-200 border border-slate-700/60 rounded-xl p-3 overflow-x-auto">   00110100   (+52)
  + 10110110   (-74)
  ──────────
    11101010   (চিহ্ন বিট = 1)</pre>
               <p class="mt-2"><strong>চিহ্ন বিট বিশ্লেষণ:</strong> এখানে কোনো Overflow bit নেই এবং ফলাফলের সর্ববামের চিহ্ন বিটটি (Sign bit) <strong>১</strong>। চিহ্ন বিট ১ হওয়ায় সংখ্যাটি ঋণাত্মক এবং ২-এর পরিপূরক গঠনে আছে। প্রকৃত মান বের করতে ফলাফলটিকে পুনরায় ২-এর পরিপূরক করলে পাই: $(00010101 + 1) = (00010110)_2 = (22)_{10}$।</p>
-              <p class="mt-2 font-bold text-emerald-700">উত্তর: নির্ণেয় ফলাফল $(-22)_{10}$।</p>
+              <p class="mt-2 font-bold text-emerald-700 dark:text-[#4ADE80]">উত্তর: নির্ণেয় ফলাফল $(-22)_{10}$।</p>
             `,
           },
         ],
@@ -636,16 +714,16 @@
         id: 6,
         badge: "প্রশ্ন ০৬ • অজানা/নতুন সংখ্যা পদ্ধতি ও রূপান্তর",
         theme: {
-          cardBorder: "border-yellow-400",
-          headerBg: "from-yellow-100 via-amber-50 to-pink-50",
-          badgeBg: "bg-amber-500 text-white",
-          stemBg: "bg-yellow-50/80 border-yellow-300",
+          cardBorder: "border-yellow-400 dark:border-amber-400/40",
+          headerBg: "from-yellow-100 via-amber-50 to-pink-50 dark:from-amber-950/60 dark:via-[#261D3D] dark:to-pink-950/30",
+          badgeBg: "bg-amber-500 dark:bg-[#FFD166] text-white dark:text-slate-950",
+          stemBg: "bg-yellow-50/80 dark:bg-[#261E3D]/90 border-yellow-300 dark:border-amber-400/30",
         },
         stem: `
           <p class="leading-relaxed">
-            আইসিটি শিক্ষক শ্রেণিকক্ষে <span class="font-semibold text-amber-800">$(0, 1, 2, 3, 4)$</span> প্রতীকবিশিষ্ট একটি নতুন সংখ্যা পদ্ধতি নিয়ে আলোচনা করলেন। 
-            এরপর তিনি ছাত্র সাকিবকে তার রোল নম্বর জিজ্ঞাসা করলে সাকিব জানাল তার রোল <span class="font-semibold text-pink-700">$(3D)_{16}$</span> এবং 
-            তার বন্ধু রাকিবের রোল <span class="font-semibold text-sky-700">$(71)_8$</span>।
+            আইসিটি শিক্ষক শ্রেণিকক্ষে <span class="font-semibold text-amber-800 dark:text-[#FFD166]">$(0, 1, 2, 3, 4)$</span> প্রতীকবিশিষ্ট একটি নতুন সংখ্যা পদ্ধতি নিয়ে আলোচনা করলেন। 
+            এরপর তিনি ছাত্র সাকিবকে তার রোল নম্বর জিজ্ঞাসা করলে সাকিব জানাল তার রোল <span class="font-semibold text-pink-700 dark:text-[#FF6B9D]">$(3D)_{16}$</span> এবং 
+            তার বন্ধু রাকিবের রোল <span class="font-semibold text-sky-700 dark:text-[#5CE1E6]">$(71)_8$</span>।
           </p>
         `,
         parts: [
@@ -671,19 +749,19 @@
             question: "উদ্দীপকের সাকিবের রোল নম্বরটিকে শিক্ষকের আলোচিত নতুন সংখ্যা পদ্ধতিতে রূপান্তর করো।",
             answer: `
               <p class="mb-2">সাকিবের রোল $= (3D)_{16}$। শিক্ষকের নতুন সংখ্যা পদ্ধতির প্রতীক $(0, 1, 2, 3, 4)$ অর্থাৎ মোট প্রতীক ৫টি, তাই এর <strong>বেজ (Base) = ৫</strong>।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-amber-200 mb-2">
-                <p class="font-semibold text-amber-800">Step 1 (Hexa-decimal &rarr; Decimal):</p>
+              <div class="step-box rounded-xl p-3 border border-amber-200 mb-2">
+                <p class="font-semibold text-amber-800 dark:text-[#FFD166]">Step 1 (Hexa-decimal &rarr; Decimal):</p>
                 <p class="mt-1">$(3D)_{16} = 3 \\times 16^1 + 13 \\times 16^0 = 48 + 13 = (61)_{10}$</p>
               </div>
-              <div class="bg-white/90 rounded-xl p-3 border border-sky-200">
-                <p class="font-semibold text-sky-700">Step 2 (Decimal &rarr; Base-5):</p>
-                <pre class="font-mono text-xs mt-1 text-slate-700">5 | 61
+              <div class="step-box rounded-xl p-3 border border-sky-200">
+                <p class="font-semibold text-sky-700 dark:text-[#5CE1E6]">Step 2 (Decimal &rarr; Base-5):</p>
+                <pre class="font-mono text-xs mt-1 text-slate-700 dark:text-slate-200">5 | 61
   └────
 5 | 12  ── 1 (LSB)
 5 |  2  ── 2
      0  ── 2 (MSB)</pre>
               </div>
-              <p class="mt-2 font-bold text-emerald-700">উত্তর: নতুন সংখ্যা পদ্ধতিতে সাকিবের রোল $(221)_5$।</p>
+              <p class="mt-2 font-bold text-emerald-700 dark:text-[#4ADE80]">উত্তর: নতুন সংখ্যা পদ্ধতিতে সাকিবের রোল $(221)_5$।</p>
             `,
           },
           {
@@ -692,13 +770,13 @@
             question: "উদ্দীপকের সাকিব ও রাকিবের রোল নম্বরের পার্থক্য যোগের মাধ্যমে নির্ণয় করো।",
             answer: `
               <p class="mb-2">সাকিবের রোল $= (3D)_{16} = (61)_{10}$ এবং রাকিবের রোল $= (71)_8$।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-sky-200 mb-2">
-                <p class="font-semibold text-sky-700">Rule 2 অনুসারে রাকিবের রোলের Decimal মান:</p>
+              <div class="step-box rounded-xl p-3 border border-sky-200 mb-2">
+                <p class="font-semibold text-sky-700 dark:text-[#5CE1E6]">Rule 2 অনুসারে রাকিবের রোলের Decimal মান:</p>
                 <p class="mt-1">$(71)_8 = 7 \\times 8^1 + 1 \\times 8^0 = 56 + 1 = (57)_{10}$</p>
               </div>
               <p class="mb-2">পার্থক্য $= 61 - 57 = 61 + (-57)$।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-amber-200 mb-2">
-                <p class="font-semibold text-amber-800">৮-বিট রেজিস্টারে ২-এর পরিপূরক গঠন:</p>
+              <div class="step-box rounded-xl p-3 border border-amber-200 mb-2">
+                <p class="font-semibold text-amber-800 dark:text-[#FFD166]">৮-বিট রেজিস্টারে ২-এর পরিপূরক গঠন:</p>
                 <ul class="list-disc list-inside mt-1 space-y-1">
                   <li>$(+61)_{10} = (00111101)_2$</li>
                   <li>$(+57)_{10} = (00111001)_2$</li>
@@ -706,11 +784,11 @@
                   <li>$(-57)$-এর ২-এর পরিপূরক $= 11000110 + 1 = (11000111)_2$</li>
                 </ul>
               </div>
-              <pre class="font-mono text-sm bg-slate-900 text-yellow-200 rounded-xl p-3 overflow-x-auto">   00111101   (+61)
+              <pre class="font-mono text-sm bg-slate-900 dark:bg-[#0D0A17] text-yellow-200 border border-slate-700/60 rounded-xl p-3 overflow-x-auto">   00111101   (+61)
  + 11000111   (-57)
  ──────────
  [1]00000100  (+4)</pre>
-              <p class="mt-2 font-bold text-emerald-700">উত্তর: Overflow bit ($1$) বাদ দিলে ফলাফল $(00000100)_2 = (4)_{10}$। অর্থাৎ, দুজনের রোলের পার্থক্য ৪।</p>
+              <p class="mt-2 font-bold text-emerald-700 dark:text-[#4ADE80]">উত্তর: Overflow bit ($1$) বাদ দিলে ফলাফল $(00000100)_2 = (4)_{10}$। অর্থাৎ, দুজনের রোলের পার্থক্য ৪।</p>
             `,
           },
         ],
@@ -719,16 +797,16 @@
         id: 7,
         badge: "প্রশ্ন ০৭ • বয়স ও পজিশনাল মান যাচাই",
         theme: {
-          cardBorder: "border-rose-300",
-          headerBg: "from-rose-100 via-pink-50 to-purple-50",
-          badgeBg: "bg-rose-500 text-white",
-          stemBg: "bg-rose-50/70 border-rose-200",
+          cardBorder: "border-rose-300 dark:border-rose-500/40",
+          headerBg: "from-rose-100 via-pink-50 to-purple-50 dark:from-rose-950/60 dark:via-[#261D3D] dark:to-purple-950/30",
+          badgeBg: "bg-rose-500 dark:bg-rose-400 text-white dark:text-slate-950",
+          stemBg: "bg-rose-50/70 dark:bg-[#261E3D]/90 border-rose-200 dark:border-rose-500/30",
         },
         stem: `
           <p class="leading-relaxed">
-            ক্লাসে শিক্ষক সামি ও তানহার বয়স জানতে চাইলে সামি বলল তার বয়স <span class="font-semibold text-rose-700">$(10011)_2$</span> বছর এবং 
-            তানহা বলল তার বয়স <span class="font-semibold text-purple-700">$(25)_8$</span> বছর। 
-            শিক্ষক বোর্ডে লিখলেন যে, তাদের দুজনের পিতার বর্তমান বয়স <span class="font-semibold text-sky-700">$(3C)_{16}$</span> বছর।
+            ক্লাসে শিক্ষক সামি ও তানহার বয়স জানতে চাইলে সামি বলল তার বয়স <span class="font-semibold text-rose-700 dark:text-[#FF6B9D]">$(10011)_2$</span> বছর এবং 
+            তানহা বলল তার বয়স <span class="font-semibold text-purple-700 dark:text-[#C084FC]">$(25)_8$</span> বছর। 
+            শিক্ষক বোর্ডে লিখলেন যে, তাদের দুজনের পিতার বর্তমান বয়স <span class="font-semibold text-sky-700 dark:text-[#5CE1E6]">$(3C)_{16}$</span> বছর।
           </p>
         `,
         parts: [
@@ -754,15 +832,15 @@
             question: "উদ্দীপকের পিতার বয়সকে অক্টাল ও বাইনারি সংখ্যা পদ্ধতিতে প্রকাশ করো।",
             answer: `
               <p class="mb-2">উদ্দীপক অনুযায়ী পিতার বর্তমান বয়স $= (3C)_{16}$ বছর।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-rose-200 mb-2">
-                <p class="font-semibold text-rose-700">Rule 3 অনুসারে Hexa-decimal &rarr; Binary (BCD 8421):</p>
+              <div class="step-box rounded-xl p-3 border border-rose-200 mb-2">
+                <p class="font-semibold text-rose-700 dark:text-[#FF6B9D]">Rule 3 অনুসারে Hexa-decimal &rarr; Binary (BCD 8421):</p>
                 <p class="mt-1">$(3C)_{16} = 3\\quad C = 0011\\ 1100 = (00111100)_2 = (111100)_2$</p>
               </div>
-              <div class="bg-white/90 rounded-xl p-3 border border-purple-200">
-                <p class="font-semibold text-purple-700">Rule 4.1 অনুসারে Binary &rarr; Octal (৩ বিট গ্রুপিং):</p>
+              <div class="step-box rounded-xl p-3 border border-purple-200">
+                <p class="font-semibold text-purple-700 dark:text-[#C084FC]">Rule 4.1 অনুসারে Binary &rarr; Octal (৩ বিট গ্রুপিং):</p>
                 <p class="mt-1">$(111100)_2 = 111\\ 100 = (74)_8$</p>
               </div>
-              <p class="mt-2 font-bold text-emerald-700">উত্তর: পিতার বয়স অক্টালে $(74)_8$ বছর এবং বাইনারিতে $(111100)_2$ বছর।</p>
+              <p class="mt-2 font-bold text-emerald-700 dark:text-[#4ADE80]">উত্তর: পিতার বয়স অক্টালে $(74)_8$ বছর এবং বাইনারিতে $(111100)_2$ বছর।</p>
             `,
           },
           {
@@ -771,14 +849,14 @@
             question: "উদ্দীপকের সামি ও তানহার মধ্যে কে বড় এবং কত বছরের বড় তা ২-এর পরিপূরক পদ্ধতিতে নির্ণয় করো।",
             answer: `
               <p class="mb-2">উদ্দীপক অনুযায়ী, সামির বয়স $= (10011)_2$ বছর এবং তানহার বয়স $= (25)_8$ বছর।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-rose-200 mb-2">
-                <p class="font-semibold text-rose-700">Rule 2 অনুসারে উভয়ের বয়স Decimal-এ রূপান্তর:</p>
+              <div class="step-box rounded-xl p-3 border border-rose-200 mb-2">
+                <p class="font-semibold text-rose-700 dark:text-[#FF6B9D]">Rule 2 অনুসারে উভয়ের বয়স Decimal-এ রূপান্তর:</p>
                 <p class="mt-1">সামির বয়স $(10011)_2 = 1\\times 2^4 + 0\\times 2^3 + 0\\times 2^2 + 1\\times 2^1 + 1\\times 2^0 = 16 + 2 + 1 = (19)_{10}$ বছর।</p>
                 <p class="mt-1">তানহার বয়স $(25)_8 = 2\\times 8^1 + 5\\times 8^0 = 16 + 5 = (21)_{10}$ বছর।</p>
               </div>
               <p class="mb-2">পার্থক্য $= 21 - 19 = 21 + (-19)$।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-amber-200 mb-2">
-                <p class="font-semibold text-amber-800">৮-বিট রেজিস্টারে ২-এর পরিপূরক গঠন:</p>
+              <div class="step-box rounded-xl p-3 border border-amber-200 mb-2">
+                <p class="font-semibold text-amber-800 dark:text-[#FFD166]">৮-বিট রেজিস্টারে ২-এর পরিপূরক গঠন:</p>
                 <ul class="list-disc list-inside mt-1 space-y-1">
                   <li>$(+21)_{10} = (00010101)_2$</li>
                   <li>$(+19)_{10} = (00010011)_2$</li>
@@ -786,11 +864,11 @@
                   <li>$(-19)$-এর ২-এর পরিপূরক $= 11101100 + 1 = (11101101)_2$</li>
                 </ul>
               </div>
-              <pre class="font-mono text-sm bg-slate-900 text-pink-200 rounded-xl p-3 overflow-x-auto">   00010101   (+21)
+              <pre class="font-mono text-sm bg-slate-900 dark:bg-[#0D0A17] text-pink-200 border border-slate-700/60 rounded-xl p-3 overflow-x-auto">   00010101   (+21)
  + 11101101   (-19)
  ──────────
  [1]00000010  (+2)</pre>
-              <p class="mt-2 font-bold text-emerald-700">সিদ্ধান্ত: Overflow bit ($1$) বাদ দিলে ফলাফল $(00000010)_2 = (2)_{10}$ বছর। অর্থাৎ, তানহা সামির চেয়ে $(2)_{10}$ বছরের বড়।</p>
+              <p class="mt-2 font-bold text-emerald-700 dark:text-[#4ADE80]">সিদ্ধান্ত: Overflow bit ($1$) বাদ দিলে ফলাফল $(00000010)_2 = (2)_{10}$ বছর। অর্থাৎ, তানহা সামির চেয়ে $(2)_{10}$ বছরের বড়।</p>
             `,
           },
         ],
@@ -799,17 +877,17 @@
         id: 8,
         badge: "প্রশ্ন ০৮ • ভগ্নাংশসহ সংখ্যা রূপান্তর ও সময় পার্থক্য",
         theme: {
-          cardBorder: "border-cyan-300",
-          headerBg: "from-cyan-100 via-sky-50 to-indigo-50",
-          badgeBg: "bg-cyan-600 text-white",
-          stemBg: "bg-cyan-50/70 border-cyan-200",
+          cardBorder: "border-cyan-300 dark:border-cyan-500/40",
+          headerBg: "from-cyan-100 via-sky-50 to-indigo-50 dark:from-cyan-950/60 dark:via-[#231C3A] dark:to-indigo-950/30",
+          badgeBg: "bg-cyan-600 dark:bg-[#5CE1E6] text-white dark:text-slate-950",
+          stemBg: "bg-cyan-50/70 dark:bg-[#231D3B]/90 border-cyan-200 dark:border-cyan-500/30",
         },
         stem: `
           <p class="leading-relaxed">
-            একটি বৃত্তাকার মাঠের পরিধি <span class="font-semibold text-cyan-800">$(254.625)_{10}$</span> মিটার। 
+            একটি বৃত্তাকার মাঠের পরিধি <span class="font-semibold text-cyan-800 dark:text-[#5CE1E6]">$(254.625)_{10}$</span> মিটার। 
             দৌড় প্রতিযোগিতায় মাঠটি একবার প্রদক্ষিণ করতে অয়ন ও শোভনের যথাক্রমে 
-            <span class="font-semibold text-pink-700">$(1011010)_2$</span> সেকেন্ড এবং 
-            <span class="font-semibold text-purple-700">$(124)_8$</span> সেকেন্ড সময় লাগে।
+            <span class="font-semibold text-pink-700 dark:text-[#FF6B9D]">$(1011010)_2$</span> সেকেন্ড এবং 
+            <span class="font-semibold text-purple-700 dark:text-[#C084FC]">$(124)_8$</span> সেকেন্ড সময় লাগে।
           </p>
         `,
         parts: [
@@ -836,9 +914,9 @@
             answer: `
               <p class="mb-2">মাঠের পরিধি $= (254.625)_{10}$ মিটার।</p>
               <div class="grid sm:grid-cols-2 gap-3">
-                <div class="bg-white/90 rounded-xl p-3 border border-cyan-200">
-                  <p class="font-semibold text-cyan-800">Rule 1.1: পূর্ণাংশ $(254)_{10}$ &rarr; Binary</p>
-                  <pre class="font-mono text-xs mt-1 text-slate-700">2 | 254
+                <div class="step-box rounded-xl p-3 border border-cyan-200">
+                  <p class="font-semibold text-cyan-800 dark:text-[#5CE1E6]">Rule 1.1: পূর্ণাংশ $(254)_{10}$ &rarr; Binary</p>
+                  <pre class="font-mono text-xs mt-1 text-slate-700 dark:text-slate-200">2 | 254
   └─────
 2 | 127 ── 0 (LSB)
 2 |  63 ── 1
@@ -850,16 +928,16 @@
       0 ── 1 (MSB)
 &there4; (254)₁₀ = (11111110)₂</pre>
                 </div>
-                <div class="bg-white/90 rounded-xl p-3 border border-purple-200">
-                  <p class="font-semibold text-purple-700">Rule 1.2: ভগ্নাংশ $(.625)_{10}$ &rarr; Binary</p>
-                  <pre class="font-mono text-xs mt-1 text-slate-700">  .625 &times; 2 = 1.250 &rarr; 1 (MSB)
+                <div class="step-box rounded-xl p-3 border border-purple-200">
+                  <p class="font-semibold text-purple-700 dark:text-[#C084FC]">Rule 1.2: ভগ্নাংশ $(.625)_{10}$ &rarr; Binary</p>
+                  <pre class="font-mono text-xs mt-1 text-slate-700 dark:text-slate-200">  .625 &times; 2 = 1.250 &rarr; 1 (MSB)
   .250 &times; 2 = 0.500 &rarr; 0
   .500 &times; 2 = 1.000 &rarr; 1 (LSB)
 
 &there4; (.625)₁₀ = (.101)₂</pre>
                 </div>
               </div>
-              <p class="mt-2 font-bold text-emerald-700">উত্তর: মাঠের পরিধি বাইনারিতে $(11111110.101)_2$ মিটার।</p>
+              <p class="mt-2 font-bold text-emerald-700 dark:text-[#4ADE80]">উত্তর: মাঠের পরিধি বাইনারিতে $(11111110.101)_2$ মিটার।</p>
             `,
           },
           {
@@ -868,14 +946,14 @@
             question: "প্রতিযোগিতায় অয়ন ও শোভনের সময়ের পার্থক্য যোগের মাধ্যমে নির্ণয় সম্ভব কি না — গাণিতিকভাবে বিশ্লেষণ করো।",
             answer: `
               <p class="mb-2">অয়নের সময় $= (1011010)_2$ সেকেন্ড এবং শোভনের সময় $= (124)_8$ সেকেন্ড।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-cyan-200 mb-2">
-                <p class="font-semibold text-cyan-800">Rule 2 অনুসারে উভয়ের সময় Decimal-এ রূপান্তর:</p>
+              <div class="step-box rounded-xl p-3 border border-cyan-200 mb-2">
+                <p class="font-semibold text-cyan-800 dark:text-[#5CE1E6]">Rule 2 অনুসারে উভয়ের সময় Decimal-এ রূপান্তর:</p>
                 <p class="mt-1">অয়নের সময় $(1011010)_2 = 64 + 16 + 8 + 2 = (90)_{10}$ সেকেন্ড।</p>
                 <p class="mt-1">শোভনের সময় $(124)_8 = 1\\times 8^2 + 2\\times 8^1 + 4\\times 8^0 = 64 + 16 + 4 = (84)_{10}$ সেকেন্ড।</p>
               </div>
               <p class="mb-2">সময়ের পার্থক্য $= 90 - 84 = 90 + (-84)$।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-amber-200 mb-2">
-                <p class="font-semibold text-amber-800">৮-বিট রেজিস্টারে ২-এর পরিপূরক গঠন:</p>
+              <div class="step-box rounded-xl p-3 border border-amber-200 mb-2">
+                <p class="font-semibold text-amber-800 dark:text-[#FFD166]">৮-বিট রেজিস্টারে ২-এর পরিপূরক গঠন:</p>
                 <ul class="list-disc list-inside mt-1 space-y-1">
                   <li>$(+90)_{10} = (01011010)_2$</li>
                   <li>$(+84)_{10} = (01010100)_2$</li>
@@ -883,11 +961,11 @@
                   <li>$(-84)$-এর ২-এর পরিপূরক $= 10101011 + 1 = (10101100)_2$</li>
                 </ul>
               </div>
-              <pre class="font-mono text-sm bg-slate-900 text-cyan-200 rounded-xl p-3 overflow-x-auto">   01011010   (+90)
+              <pre class="font-mono text-sm bg-slate-900 dark:bg-[#0D0A17] text-cyan-200 border border-slate-700/60 rounded-xl p-3 overflow-x-auto">   01011010   (+90)
  + 10101100   (-84)
  ──────────
  [1]00000110  (+6)</pre>
-              <p class="mt-2 font-bold text-emerald-700">সিদ্ধান্ত: Overflow bit ($1$) বাদ দিলে ফলাফল $(00000110)_2 = (6)_{10}$ সেকেন্ড। হ্যাঁ, যোগের মাধ্যমে (২-এর পরিপূরক পদ্ধতিতে) সময়ের পার্থক্য নির্ণয় করা সম্ভব।</p>
+              <p class="mt-2 font-bold text-emerald-700 dark:text-[#4ADE80]">সিদ্ধান্ত: Overflow bit ($1$) বাদ দিলে ফলাফল $(00000110)_2 = (6)_{10}$ সেকেন্ড। হ্যাঁ, যোগের মাধ্যমে (২-এর পরিপূরক পদ্ধতিতে) সময়ের পার্থক্য নির্ণয় করা সম্ভব।</p>
             `,
           },
         ],
@@ -896,29 +974,29 @@
         id: 9,
         badge: "প্রশ্ন ০৯ • টেবিল/ছকভিত্তিক পণ্যের মূল্য হিসাব",
         theme: {
-          cardBorder: "border-fuchsia-300",
-          headerBg: "from-fuchsia-100 via-pink-50 to-amber-50",
-          badgeBg: "bg-fuchsia-600 text-white",
-          stemBg: "bg-fuchsia-50/70 border-fuchsia-200",
+          cardBorder: "border-fuchsia-300 dark:border-fuchsia-500/40",
+          headerBg: "from-fuchsia-100 via-pink-50 to-amber-50 dark:from-fuchsia-950/60 dark:via-[#261D3D] dark:to-pink-950/30",
+          badgeBg: "bg-fuchsia-600 dark:bg-fuchsia-400 text-white dark:text-slate-950",
+          stemBg: "bg-fuchsia-50/70 dark:bg-[#261E3D]/90 border-fuchsia-200 dark:border-fuchsia-500/30",
         },
         stem: `
           <p class="leading-relaxed mb-3">
             রিফাত একটি কম্পিউটার এক্সেসরিজ দোকান থেকে নিচের ছক অনুযায়ী তিনটি পণ্য ক্রয় করল:
           </p>
           <div class="overflow-x-auto">
-            <table class="w-full max-w-md mx-auto bg-white rounded-xl overflow-hidden border border-fuchsia-200 text-center text-sm shadow-xs">
-              <thead class="bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white">
+            <table class="w-full max-w-md mx-auto bg-white dark:bg-[#141024] rounded-xl overflow-hidden border border-fuchsia-200 dark:border-fuchsia-500/40 text-center text-sm shadow-xs">
+              <thead class="bg-gradient-to-r from-fuchsia-500 to-pink-500 dark:from-fuchsia-600 dark:to-pink-600 text-white">
                 <tr>
                   <th class="py-2 px-4">পণ্যের নাম</th>
                   <th class="py-2 px-4">মূল্য</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-fuchsia-100 font-medium">
+              <tbody class="divide-y divide-fuchsia-100 dark:divide-[#362C54] font-medium text-slate-800 dark:text-[#F5F2FF]">
                 <tr>
                   <td class="py-2 px-4">মাউস</td>
                   <td class="py-2 px-4">$(145)_8$ টাকা</td>
                 </tr>
-                <tr class="bg-pink-50/40">
+                <tr class="bg-pink-50/40 dark:bg-[#1F1933]/80">
                   <td class="py-2 px-4">কীবোর্ড</td>
                   <td class="py-2 px-4">$(7B)_{16}$ টাকা</td>
                 </tr>
@@ -953,16 +1031,16 @@
             question: "উদ্দীপকের ছক হতে মাউস ও কীবোর্ডের মোট মূল্য বাইনারিতে নির্ণয় করো।",
             answer: `
               <p class="mb-2">ছক অনুযায়ী, মাউসের মূল্য $= (145)_8$ টাকা এবং কীবোর্ডের মূল্য $= (7B)_{16}$ টাকা।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-fuchsia-200 mb-2">
-                <p class="font-semibold text-fuchsia-700">Rule 3 অনুসারে উভয় মূল্যকে Binary-তে রূপান্তর:</p>
+              <div class="step-box rounded-xl p-3 border border-fuchsia-200 mb-2">
+                <p class="font-semibold text-fuchsia-700 dark:text-[#C084FC]">Rule 3 অনুসারে উভয় মূল্যকে Binary-তে রূপান্তর:</p>
                 <p class="mt-1"><strong>মাউস:</strong> $(145)_8 = 001\\ 100\\ 101 = (01100101)_2$</p>
                 <p class="mt-1"><strong>কীবোর্ড:</strong> $(7B)_{16} = 0111\\ 1011 = (01111011)_2$</p>
               </div>
-              <pre class="font-mono text-sm bg-slate-900 text-fuchsia-200 rounded-xl p-3 overflow-x-auto">   01100101
+              <pre class="font-mono text-sm bg-slate-900 dark:bg-[#0D0A17] text-fuchsia-200 border border-slate-700/60 rounded-xl p-3 overflow-x-auto">   01100101
  + 01111011
  ──────────
    11100000</pre>
-              <p class="mt-2 font-bold text-emerald-700">উত্তর: মাউস ও কীবোর্ডের মোট মূল্য $(11100000)_2$ টাকা।</p>
+              <p class="mt-2 font-bold text-emerald-700 dark:text-[#4ADE80]">উত্তর: মাউস ও কীবোর্ডের মোট মূল্য $(11100000)_2$ টাকা।</p>
             `,
           },
           {
@@ -970,8 +1048,8 @@
             marks: "৪",
             question: "ছকে উল্লিখিত সর্বোচ্চ ও সর্বনিম্ন মূল্যের পণ্যের দামের পার্থক্য ২-এর পরিপূরক পদ্ধতিতে নির্ণয় করো।",
             answer: `
-              <div class="bg-white/90 rounded-xl p-3 border border-fuchsia-200 mb-2">
-                <p class="font-semibold text-fuchsia-700">Rule 2 অনুসারে তিনটি পণ্যের মূল্য Decimal-এ রূপান্তর:</p>
+              <div class="step-box rounded-xl p-3 border border-fuchsia-200 mb-2">
+                <p class="font-semibold text-fuchsia-700 dark:text-[#C084FC]">Rule 2 অনুসারে তিনটি পণ্যের মূল্য Decimal-এ রূপান্তর:</p>
                 <ul class="list-disc list-inside mt-1 space-y-1">
                   <li>মাউস $(145)_8 = 64 + 32 + 5 = (101)_{10}$ টাকা</li>
                   <li>কীবোর্ড $(7B)_{16} = 112 + 11 = (123)_{10}$ টাকা <strong>(সর্বোচ্চ মূল্য)</strong></li>
@@ -979,8 +1057,8 @@
                 </ul>
               </div>
               <p class="mb-2">পার্থক্য $= 123 - 82 = 123 + (-82)$।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-amber-200 mb-2">
-                <p class="font-semibold text-amber-800">৮-বিট রেজিস্টারে ২-এর পরিপূরক গঠন:</p>
+              <div class="step-box rounded-xl p-3 border border-amber-200 mb-2">
+                <p class="font-semibold text-amber-800 dark:text-[#FFD166]">৮-বিট রেজিস্টারে ২-এর পরিপূরক গঠন:</p>
                 <ul class="list-disc list-inside mt-1 space-y-1">
                   <li>$(+123)_{10} = (01111011)_2$</li>
                   <li>$(+82)_{10} = (01010010)_2$</li>
@@ -988,11 +1066,11 @@
                   <li>$(-82)$-এর ২-এর পরিপূরক $= 10101101 + 1 = (10101110)_2$</li>
                 </ul>
               </div>
-              <pre class="font-mono text-sm bg-slate-900 text-pink-200 rounded-xl p-3 overflow-x-auto">   01111011   (+123)
+              <pre class="font-mono text-sm bg-slate-900 dark:bg-[#0D0A17] text-pink-200 border border-slate-700/60 rounded-xl p-3 overflow-x-auto">   01111011   (+123)
  + 10101110   (-82)
  ──────────
  [1]00101001  (+41)</pre>
-              <p class="mt-2 font-bold text-emerald-700">উত্তর: Overflow bit ($1$) বাদ দিলে ফলাফল $(00101001)_2 = (41)_{10}$ টাকা।</p>
+              <p class="mt-2 font-bold text-emerald-700 dark:text-[#4ADE80]">উত্তর: Overflow bit ($1$) বাদ দিলে ফলাফল $(00101001)_2 = (41)_{10}$ টাকা।</p>
             `,
           },
         ],
@@ -1001,15 +1079,15 @@
         id: 10,
         badge: "প্রশ্ন ১০ • কোডিং ও সংখ্যা পদ্ধতির সমন্বিত প্রয়োগ",
         theme: {
-          cardBorder: "border-indigo-300",
-          headerBg: "from-indigo-100 via-sky-50 to-pink-50",
-          badgeBg: "bg-indigo-600 text-white",
-          stemBg: "bg-indigo-50/70 border-indigo-200",
+          cardBorder: "border-indigo-300 dark:border-indigo-500/40",
+          headerBg: "from-indigo-100 via-sky-50 to-pink-50 dark:from-indigo-950/60 dark:via-[#231C3A] dark:to-pink-950/30",
+          badgeBg: "bg-indigo-600 dark:bg-indigo-400 text-white dark:text-slate-950",
+          stemBg: "bg-indigo-50/70 dark:bg-[#231D3B]/90 border-indigo-200 dark:border-indigo-500/30",
         },
         stem: `
           <p class="leading-relaxed">
-            রনি ও জনি দুজনেই একাদশ শ্রেণির শিক্ষার্থী। রনির আইডি নম্বর <span class="font-semibold text-indigo-700">$(0101\\ 1001)_{BCD}$</span> এবং 
-            জনির আইডি নম্বর <span class="font-semibold text-pink-700">$(4B)_{16}$</span>। 
+            রনি ও জনি দুজনেই একাদশ শ্রেণির শিক্ষার্থী। রনির আইডি নম্বর <span class="font-semibold text-indigo-700 dark:text-[#5CE1E6]">$(0101\\ 1001)_{BCD}$</span> এবং 
+            জনির আইডি নম্বর <span class="font-semibold text-pink-700 dark:text-[#FF6B9D]">$(4B)_{16}$</span>। 
             আইসিটি শিক্ষক বললেন, কম্পিউটারে বাংলা বর্ণমালা লেখার জন্য বর্তমানে ১৬ বিটের একটি বিশেষ কোড ব্যবহৃত হয়।
           </p>
         `,
@@ -1036,20 +1114,20 @@
             question: "উদ্দীপকের রনি ও জনির আইডি নম্বরের যোগফল অক্টাল সংখ্যা পদ্ধতিতে নির্ণয় করো।",
             answer: `
               <p class="mb-2">উদ্দীপক অনুযায়ী, রনির আইডি $= (0101\\ 1001)_{BCD} = (59)_{10}$ <em>(যেহেতু $0101 = 5$ এবং $1001 = 9$)</em> এবং জনির আইডি $= (4B)_{16}$।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-indigo-200 mb-2">
-                <p class="font-semibold text-indigo-700">Rule 2 অনুসারে জনির আইডির Decimal মান:</p>
+              <div class="step-box rounded-xl p-3 border border-indigo-200 mb-2">
+                <p class="font-semibold text-indigo-700 dark:text-[#5CE1E6]">Rule 2 অনুসারে জনির আইডির Decimal মান:</p>
                 <p class="mt-1">$(4B)_{16} = 4 \\times 16^1 + 11 \\times 16^0 = 64 + 11 = (75)_{10}$</p>
               </div>
               <p class="mb-2">দুজনের আইডি নম্বরের যোগফল $= (59 + 75)_{10} = (134)_{10}$।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-sky-200">
-                <p class="font-semibold text-sky-700">Rule 1.1 অনুসারে $(134)_{10}$-কে Octal-এ রূপান্তর:</p>
-                <pre class="font-mono text-xs mt-1 text-slate-700">8 | 134
+              <div class="step-box rounded-xl p-3 border border-sky-200">
+                <p class="font-semibold text-sky-700 dark:text-[#C084FC]">Rule 1.1 অনুসারে $(134)_{10}$-কে Octal-এ রূপান্তর:</p>
+                <pre class="font-mono text-xs mt-1 text-slate-700 dark:text-slate-200">8 | 134
   └─────
 8 |  16  ── 6 (LSB)
 8 |   2  ── 0
       0  ── 2 (MSB)</pre>
               </div>
-              <p class="mt-2 font-bold text-emerald-700">উত্তর: যোগফল অক্টাল সংখ্যা পদ্ধতিতে $(206)_8$।</p>
+              <p class="mt-2 font-bold text-emerald-700 dark:text-[#4ADE80]">উত্তর: যোগফল অক্টাল সংখ্যা পদ্ধতিতে $(206)_8$।</p>
             `,
           },
           {
@@ -1058,8 +1136,8 @@
             question: "২-এর পরিপূরক পদ্ধতি ব্যবহার করে রনি ও জনির আইডি নম্বরের পার্থক্য নির্ণয়পূর্বক ফলাফল যাচাই করো।",
             answer: `
               <p class="mb-2">রনির আইডি $= (59)_{10}$ এবং জনির আইডি $= (75)_{10}$। পার্থক্য $= 75 - 59 = 75 + (-59)$।</p>
-              <div class="bg-white/90 rounded-xl p-3 border border-amber-200 mb-2">
-                <p class="font-semibold text-amber-800">৮-বিট রেজিস্টারে ২-এর পরিপূরক গঠন:</p>
+              <div class="step-box rounded-xl p-3 border border-amber-200 mb-2">
+                <p class="font-semibold text-amber-800 dark:text-[#FFD166]">৮-বিট রেজিস্টারে ২-এর পরিপূরক গঠন:</p>
                 <ul class="list-disc list-inside mt-1 space-y-1">
                   <li>$(+75)_{10} = (01001011)_2$</li>
                   <li>$(+59)_{10} = (00111011)_2$</li>
@@ -1067,17 +1145,35 @@
                   <li>$(-59)$-এর ২-এর পরিপূরক $= 11000100 + 1 = (11000101)_2$</li>
                 </ul>
               </div>
-              <pre class="font-mono text-sm bg-slate-900 text-indigo-200 rounded-xl p-3 overflow-x-auto">   01001011   (+75)
+              <pre class="font-mono text-sm bg-slate-900 dark:bg-[#0D0A17] text-indigo-200 border border-slate-700/60 rounded-xl p-3 overflow-x-auto">   01001011   (+75)
  + 11000101   (-59)
  ──────────
  [1]00010000  (+16)</pre>
               <p class="mt-2">Overflow bit ($1$) বাদ দিলে ফলাফল $(00010000)_2 = (16)_{10}$।</p>
-              <p class="mt-2 font-bold text-emerald-700">ফলাফল যাচাই (শুদ্ধিপরীক্ষা): সাধারণ দশমিক বিয়োগ অনুযায়ী, $75 - 59 = 16$, যা ২-এর পরিপূরক পদ্ধতিতে প্রাপ্ত ফলাফল $(00010000)_2 = (16)_{10}$-এর সাথে সম্পূর্ণ মিলে যায়।</p>
+              <p class="mt-2 font-bold text-emerald-700 dark:text-[#4ADE80]">ফলাফল যাচাই (শুদ্ধিপরীক্ষা): সাধারণ দশমিক বিয়োগ অনুযায়ী, $75 - 59 = 16$, যা ২-এর পরিপূরক পদ্ধতিতে প্রাপ্ত ফলাফল $(00010000)_2 = (16)_{10}$-এর সাথে সম্পূর্ণ মিলে যায়।</p>
             `,
           },
         ],
       },
     ];
+
+    // Theme Management (Light Mode <-> Midnight Birthday Party Dark Mode)
+    function updateThemeToggleUI() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const iconEl = document.getElementById('theme-icon');
+      const labelEl = document.getElementById('theme-label');
+      if (iconEl && labelEl) {
+        iconEl.textContent = isDark ? '☀️' : '🌙';
+        labelEl.textContent = isDark ? 'লাইট মোড' : 'ডার্ক মোড';
+      }
+    }
+
+    function toggleTheme() {
+      const htmlEl = document.documentElement;
+      const isDark = htmlEl.classList.toggle('dark');
+      localStorage.setItem('hsc-ict-bday-theme', isDark ? 'dark' : 'light');
+      updateThemeToggleUI();
+    }
 
     // Bengali digit helper
     const toBanglaDigits = (num) => {
@@ -1085,22 +1181,22 @@
       return String(num).replace(/\d/g, (d) => bn[d]);
     };
 
-    // Render decorative floating confetti elements
+    // Render decorative floating confetti elements (double as glowing fairy lights in dark mode)
     function renderConfetti() {
       const container = document.getElementById('confetti-container');
-      const colors = ['#FF8A65', '#FFD54F', '#4FC3F7', '#81C784', '#BA68C8', '#F06292'];
+      const colors = ['#FF6B9D', '#FFD166', '#5CE1E6', '#4ADE80', '#C084FC', '#FF8A65'];
       const shapes = ['rounded-full', 'rounded-xs rotate-45', 'rounded-sm'];
       let html = '';
 
-      for (let i = 0; i < 24; i++) {
-        const left = (i * 4.2 + 2) % 98;
+      for (let i = 0; i < 26; i++) {
+        const left = (i * 4.1 + 2) % 98;
         const top = (i * 13 + 7) % 92;
         const size = (i % 3) * 4 + 8;
         const color = colors[i % colors.length];
         const shape = shapes[i % shapes.length];
         const delay = (i % 5) * 1.1;
 
-        html += `<div class="confetti-piece ${shape}" style="left:${left}vw; top:${top}vh; width:${size}px; height:${size}px; background-color:${color}; animation-delay:${delay}s;"></div>`;
+        html += `<div class="confetti-piece ${shape}" style="left:${left}vw; top:${top}vh; width:${size}px; height:${size}px; color:${color}; background-color:${color}; animation-delay:${delay}s;"></div>`;
       }
       container.innerHTML = html;
     }
@@ -1111,23 +1207,23 @@
       const container = document.getElementById('questions-container');
 
       const pillColors = [
-        'bg-pink-100 hover:bg-pink-200 text-pink-800 border-pink-300',
-        'bg-sky-100 hover:bg-sky-200 text-sky-800 border-sky-300',
-        'bg-purple-100 hover:bg-purple-200 text-purple-800 border-purple-300',
-        'bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border-emerald-300',
-        'bg-orange-100 hover:bg-orange-200 text-orange-800 border-orange-300',
-        'bg-yellow-100 hover:bg-yellow-200 text-yellow-900 border-yellow-300',
-        'bg-rose-100 hover:bg-rose-200 text-rose-800 border-rose-300',
-        'bg-cyan-100 hover:bg-cyan-200 text-cyan-800 border-cyan-300',
-        'bg-fuchsia-100 hover:bg-fuchsia-200 text-fuchsia-800 border-fuchsia-300',
-        'bg-indigo-100 hover:bg-indigo-200 text-indigo-800 border-indigo-300',
+        'bg-pink-100 hover:bg-pink-200 text-pink-800 border-pink-300 dark:bg-pink-500/20 dark:hover:bg-pink-500/35 dark:text-[#FF6B9D] dark:border-pink-400/40',
+        'bg-sky-100 hover:bg-sky-200 text-sky-800 border-sky-300 dark:bg-cyan-500/20 dark:hover:bg-cyan-500/35 dark:text-[#5CE1E6] dark:border-cyan-400/40',
+        'bg-purple-100 hover:bg-purple-200 text-purple-800 border-purple-300 dark:bg-purple-500/20 dark:hover:bg-purple-500/35 dark:text-[#C084FC] dark:border-purple-400/40',
+        'bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border-emerald-300 dark:bg-emerald-500/20 dark:hover:bg-emerald-500/35 dark:text-[#4ADE80] dark:border-emerald-400/40',
+        'bg-orange-100 hover:bg-orange-200 text-orange-800 border-orange-300 dark:bg-orange-500/20 dark:hover:bg-orange-500/35 dark:text-orange-300 dark:border-orange-400/40',
+        'bg-yellow-100 hover:bg-yellow-200 text-yellow-900 border-yellow-300 dark:bg-amber-400/20 dark:hover:bg-amber-400/35 dark:text-[#FFD166] dark:border-amber-400/40',
+        'bg-rose-100 hover:bg-rose-200 text-rose-800 border-rose-300 dark:bg-rose-500/20 dark:hover:bg-rose-500/35 dark:text-rose-300 dark:border-rose-400/40',
+        'bg-cyan-100 hover:bg-cyan-200 text-cyan-800 border-cyan-300 dark:bg-sky-500/20 dark:hover:bg-sky-500/35 dark:text-sky-300 dark:border-sky-400/40',
+        'bg-fuchsia-100 hover:bg-fuchsia-200 text-fuchsia-800 border-fuchsia-300 dark:bg-fuchsia-500/20 dark:hover:bg-fuchsia-500/35 dark:text-fuchsia-300 dark:border-fuchsia-400/40',
+        'bg-indigo-100 hover:bg-indigo-200 text-indigo-800 border-indigo-300 dark:bg-indigo-500/20 dark:hover:bg-indigo-500/35 dark:text-indigo-300 dark:border-indigo-400/40',
       ];
 
       jumpNav.innerHTML = creativeQuestions
         .map(
           (q, idx) => `
           <a href="#question-${q.id}"
-             class="px-3 py-1 rounded-full border text-xs sm:text-sm font-semibold transition-transform hover:-translate-y-0.5 ${pillColors[idx]}">
+             class="px-3 py-1 rounded-full border text-xs sm:text-sm font-semibold transition-all hover:-translate-y-0.5 ${pillColors[idx]}">
             প্রশ্ন ${toBanglaDigits(q.id)}
           </a>
         `
@@ -1140,14 +1236,14 @@
             .map((part, pIdx) => {
               const partUid = `q${q.id}-p${pIdx}`;
               return `
-                <div class="pt-3.5 pb-2 border-b last:border-b-0 border-slate-100">
+                <div class="pt-3.5 pb-2 border-b last:border-b-0 border-slate-100 dark:border-[#362C54]">
                   <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2.5">
-                    <div class="flex-1 text-base sm:text-[17px] text-slate-800 leading-relaxed">
-                      <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-pink-100 text-pink-700 font-bold text-sm mr-1.5">
+                    <div class="flex-1 text-base sm:text-[17px] text-slate-800 dark:text-[#F5F2FF] leading-relaxed">
+                      <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-pink-100 dark:bg-pink-500/25 text-pink-700 dark:text-[#FF6B9D] font-bold text-sm mr-1.5">
                         ${part.label}
                       </span>
                       <span>${part.question}</span>
-                      <span class="ml-1.5 text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                      <span class="ml-1.5 text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-[#2A2142] text-slate-600 dark:text-[#C7BFE6]">
                         নম্বর: ${part.marks}
                       </span>
                     </div>
@@ -1160,7 +1256,7 @@
                         onclick="toggleSingleAnswer('${partUid}')"
                         aria-expanded="false"
                         aria-controls="ans-${partUid}"
-                        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-amber-300 via-yellow-300 to-pink-300 hover:from-amber-400 hover:to-pink-400 text-slate-900 border border-amber-400/70 shadow-xs transition-all active:scale-95 cursor-pointer"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-amber-300 via-yellow-300 to-pink-300 dark:from-[#FFD166] dark:via-amber-300 dark:to-[#FF6B9D] hover:from-amber-400 hover:to-pink-400 text-slate-950 border border-amber-400/70 dark:border-amber-200/60 shadow-xs transition-all active:scale-95 cursor-pointer"
                       >
                         <span class="btn-icon">🎁</span>
                         <span class="btn-text">উত্তর দেখুন</span>
@@ -1171,9 +1267,9 @@
                   <!-- Hidden Answer Box for this specific part only -->
                   <div
                     id="ans-${partUid}"
-                    class="hidden answer-drawer mt-3 rounded-2xl bg-gradient-to-br from-mint-50 via-emerald-50/70 to-sky-50/60 border border-emerald-200 p-4 text-sm sm:text-base text-slate-800 shadow-inner"
+                    class="hidden answer-drawer mt-3 rounded-2xl border p-4 text-sm sm:text-base text-slate-800 dark:text-[#F5F2FF] shadow-inner"
                   >
-                    <div class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-emerald-700 mb-2">
+                    <div class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-emerald-700 dark:text-[#4ADE80] mb-2">
                       <span>🎂</span>
                       <span>সমাধান (${part.label}):</span>
                     </div>
@@ -1187,25 +1283,25 @@
             .join('');
 
           return `
-            <article id="question-${q.id}" class="scroll-mt-8 bg-white/95 backdrop-blur-sm rounded-3xl border-2 ${q.theme.cardBorder} shadow-md shadow-pink-100/50 overflow-hidden transition-all">
+            <article id="question-${q.id}" class="scroll-mt-8 bg-white/95 dark:bg-[#1F1933]/95 backdrop-blur-sm rounded-3xl border-2 ${q.theme.cardBorder} shadow-md shadow-pink-100/50 dark:shadow-[0_10px_30px_rgba(0,0,0,0.45)] overflow-hidden transition-all duration-300">
               <!-- Card Header -->
-              <div class="bg-gradient-to-r ${q.theme.headerBg} px-5 py-3.5 border-b border-slate-200/70 flex flex-wrap items-center justify-between gap-2">
+              <div class="bg-gradient-to-r ${q.theme.headerBg} px-5 py-3.5 border-b border-slate-200/70 dark:border-[#362C54] flex flex-wrap items-center justify-between gap-2">
                 <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs sm:text-sm font-bold shadow-xs ${q.theme.badgeBg}">
                   🎈 ${q.badge}
                 </span>
-                <span class="text-xs font-semibold text-slate-500">পূর্ণমান: ১০</span>
+                <span class="text-xs font-semibold text-slate-500 dark:text-[#C7BFE6]">পূর্ণমান: ১০</span>
               </div>
 
               <!-- Card Body -->
               <div class="p-5 sm:p-6">
                 <!-- উদ্দীপক (Stem) -->
-                <div class="rounded-2xl border ${q.theme.stemBg} p-4 mb-4 text-base sm:text-[17px] text-slate-800">
-                  <div class="text-xs font-bold text-pink-600 mb-1">🎊 উদ্দীপক:</div>
+                <div class="rounded-2xl border ${q.theme.stemBg} p-4 mb-4 text-base sm:text-[17px] text-slate-800 dark:text-[#F5F2FF]">
+                  <div class="text-xs font-bold text-pink-600 dark:text-[#FF6B9D] mb-1">🎊 উদ্দীপক:</div>
                   ${q.stem}
                 </div>
 
                 <!-- Parts (ক, খ, গ, ঘ) -->
-                <div class="divide-y divide-slate-100">
+                <div class="divide-y divide-slate-100 dark:divide-[#362C54]">
                   ${partsHtml}
                 </div>
               </div>
@@ -1224,15 +1320,15 @@
       if (isHidden) {
         ansEl.classList.remove('hidden');
         btnEl.setAttribute('aria-expanded', 'true');
-        btnEl.classList.remove('from-amber-300', 'via-yellow-300', 'to-pink-300', 'border-amber-400/70');
-        btnEl.classList.add('from-emerald-400', 'to-teal-400', 'text-white', 'border-emerald-500');
+        btnEl.classList.remove('from-amber-300', 'via-yellow-300', 'to-pink-300', 'dark:from-[#FFD166]', 'dark:via-amber-300', 'dark:to-[#FF6B9D]', 'text-slate-950', 'border-amber-400/70', 'dark:border-amber-200/60');
+        btnEl.classList.add('from-emerald-400', 'to-teal-500', 'text-white', 'border-emerald-500');
         btnEl.querySelector('.btn-icon').textContent = '🙈';
         btnEl.querySelector('.btn-text').textContent = 'উত্তর লুকান';
       } else {
         ansEl.classList.add('hidden');
         btnEl.setAttribute('aria-expanded', 'false');
-        btnEl.classList.remove('from-emerald-400', 'to-teal-400', 'text-white', 'border-emerald-500');
-        btnEl.classList.add('from-amber-300', 'via-yellow-300', 'to-pink-300', 'border-amber-400/70');
+        btnEl.classList.remove('from-emerald-400', 'to-teal-500', 'text-white', 'border-emerald-500');
+        btnEl.classList.add('from-amber-300', 'via-yellow-300', 'to-pink-300', 'dark:from-[#FFD166]', 'dark:via-amber-300', 'dark:to-[#FF6B9D]', 'text-slate-950', 'border-amber-400/70', 'dark:border-amber-200/60');
         btnEl.querySelector('.btn-icon').textContent = '🎁';
         btnEl.querySelector('.btn-text').textContent = 'উত্তর দেখুন';
       }
@@ -1265,6 +1361,7 @@
 
     // Initialize everything on DOM load & render KaTeX formulas
     document.addEventListener('DOMContentLoaded', () => {
+      updateThemeToggleUI();
       renderConfetti();
       renderApp();
 
